@@ -26,11 +26,11 @@
 Создан образ контейнера alertmanager из файла **monitoring/alertmanager/Dockerfile**. Образ запушен на докер-хаб (ссылки внизу). В качестве мэсенджера использован именной канал в Слаке, для чего на нем настроен web-hook, его API URL использован для настройки alertmanager. Сам alertmanager запущен в ещё одном контейнере, для чего был собран образ с конфигом в котором настроен web-hook и добавлен новый сервис в **docker-compose-monitoring.yml**. В Prometheus добавлена конфигурация алерта, путем добавления файла **monitoring/prometheus/alerts.yml** в образ контейнера. После пересоздания инфраструктуры мониторинга в интерфейсе Alerts появился наш настроенный алерт. Так же его можно посмотреть в собственном UI Alertmanager'а, для чего добавлено правило фаервола GCP для доступа к веб-интерфейсу Alertmanager'а. Для проверки работы алерта был выключен контейнер post, и через минуту получено оповещение об этом в Слак чат. 
 ## Результаты работы.
 Созданные в результате выполнения ДЗ образы находятся по следующим ссылкам:
-https://hub.docker.com/r/azhelezov/comment/
-https://hub.docker.com/r/azhelezov/post/
-https://hub.docker.com/r/azhelezov/ui/
-https://hub.docker.com/r/azhelezov/prometheus/
-https://hub.docker.com/r/azhelezov/alertmanager/
+* https://hub.docker.com/r/azhelezov/comment/
+* https://hub.docker.com/r/azhelezov/post/
+* https://hub.docker.com/r/azhelezov/ui/
+* https://hub.docker.com/r/azhelezov/prometheus/
+* https://hub.docker.com/r/azhelezov/alertmanager/
 
 #######################################################
 
