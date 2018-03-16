@@ -5,6 +5,9 @@ services:
     ports:
       - "24224:24224"
       - "24224:24224/udp"
+    networks:
+      front_net:
+      back_net:
 
   elasticsearch:
     image: elasticsearch
@@ -12,8 +15,18 @@ services:
       - 9200
     ports:
       - "9200:9200"
+    networks:
+      front_net:
+      back_net:
 
   kibana:
     image: kibana
     ports:
       - "5601:5601"
+    networks:
+      front_net:
+      back_net:
+
+networks:
+  front_net:
+  back_net:

@@ -1,4 +1,4 @@
-version: '3.3'
+version: '3'
 services:
   zipkin:
     image: openzipkin/zipkin
@@ -6,6 +6,7 @@ services:
       - "9411:9411"
     networks:
       front_net:
+      back_net:
   post_db:
     image: mongo:3.2
     volumes:
@@ -17,6 +18,13 @@ services:
           - comment_db
   ui:
     image: ${USERNAME}/ui:${UI_VER}
+    environment:
+      - POST_SERVICE_HOST=post
+      - POST_SERVICE_PORT=5000
+      - COMMENT_SERVICE_HOST=comment
+      - COMMENT_SERVICE_PORT=9292
+    depends_on:
+      - fluentd
     ports:
       - ${H_PORT_UI}:${C_PORT_UI}/tcp
     networks:
