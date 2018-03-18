@@ -18,6 +18,8 @@ services:
   ui:
     image: ${USERNAME}/ui:${UI_VER}
     deploy:
+      mode: replicated
+      replicas: 2
       placement:
         constraints:
           - node.role == worker
@@ -34,6 +36,8 @@ services:
   post:
     image: ${USERNAME}/post:${POST_VER}
     deploy:
+      mode: replicated
+      replicas: 2
       placement:
         constraints:
           - node.role == worker
@@ -51,6 +55,8 @@ services:
   comment:
     image: ${USERNAME}/comment:${COMMENT_VER}
     deploy:
+      mode: replicated
+      replicas: 2
       placement:
         constraints:
           - node.role == worker
