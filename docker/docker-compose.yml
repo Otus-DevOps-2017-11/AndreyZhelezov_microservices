@@ -19,7 +19,7 @@ services:
     image: ${USERNAME}/ui:${UI_VER}
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 3
       placement:
         constraints:
           - node.role == worker
@@ -37,7 +37,7 @@ services:
     image: ${USERNAME}/post:${POST_VER}
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 3
       placement:
         constraints:
           - node.role == worker
@@ -56,10 +56,18 @@ services:
     image: ${USERNAME}/comment:${COMMENT_VER}
     deploy:
       mode: replicated
-      replicas: 2
+      replicas: 3
       placement:
         constraints:
           - node.role == worker
+    networks:
+      - front_net
+      - back_net
+
+  node-exporter:
+    image: prom/node-exporter:v0.15.0 
+    deploy: 
+      mode: global 
     networks:
       - front_net
       - back_net
