@@ -1,14 +1,20 @@
 version: '3'
 services:
+
   zipkin:
     image: openzipkin/zipkin
     ports:
       - "9411:9411"
     networks:
-      front_net:
-      back_net:
+      - front_net
+      - back_net
+
   post_db:
     image: mongo:3.2
+    deploy:
+      placement:
+        constraints:
+          - node.labels.reliability == high
     volumes:
       - post_db:/data/db
     networks:
@@ -16,29 +22,32 @@ services:
         aliases:
           - post_db
           - comment_db
+
   ui:
     image: ${USERNAME}/ui:${UI_VER}
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
     environment:
       - POST_SERVICE_HOST=post
       - POST_SERVICE_PORT=5000
       - COMMENT_SERVICE_HOST=comment
       - COMMENT_SERVICE_PORT=9292
-    depends_on:
-      - fluentd
     ports:
       - ${H_PORT_UI}:${C_PORT_UI}/tcp
     networks:
-      front_net:
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: service.ui
+      - front_net
+
   post:
     image: ${USERNAME}/post:${POST_VER}
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
     networks:
-      back_net:
-      front_net:
+      - back_net
+      - front_net
     environment:
       - POST_DATABASE_HOST=post_db
       - POST_DATABASE=posts
@@ -46,20 +55,20 @@ services:
       - post_db
     ports:
       - "5000:5000"
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: service.post
+
   comment:
     image: ${USERNAME}/comment:${COMMENT_VER}
+    deploy:
+      placement:
+        constraints:
+          - node.role == worker
     networks:
-      back_net:
-      front_net:
+      - front_net
+      - back_net
 
 volumes:
-  post_db:
+  post_db: {}
 
 networks:
-  back_net:
-  front_net:
+  back_net: {}
+  front_net: {}
