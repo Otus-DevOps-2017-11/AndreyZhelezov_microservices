@@ -18,6 +18,10 @@ services:
   ui:
     image: ${USERNAME}/ui:${UI_VER}
     deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 150M
       mode: replicated
       replicas: 3
       update_config:
@@ -40,6 +44,10 @@ services:
   post:
     image: ${USERNAME}/post:${POST_VER}
     deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 300M
       mode: replicated
       replicas: 3
       update_config:
@@ -63,6 +71,10 @@ services:
   comment:
     image: ${USERNAME}/comment:${COMMENT_VER}
     deploy:
+      resources:
+        limits:
+          cpus: '0.3'
+          memory: 300M
       mode: replicated
       replicas: 3
       update_config:
