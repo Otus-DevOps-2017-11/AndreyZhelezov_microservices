@@ -18,6 +18,10 @@ services:
   ui:
     image: ${USERNAME}/ui:${UI_VER}
     deploy:
+      restart_policy: 
+        condition: on-failure 
+        max_attempts: 3
+        delay: 3s
       resources:
         limits:
           cpus: '0.25'
@@ -44,6 +48,10 @@ services:
   post:
     image: ${USERNAME}/post:${POST_VER}
     deploy:
+      restart_policy: 
+        condition: on-failure 
+        max_attempts: 12
+        delay: 1s
       resources:
         limits:
           cpus: '0.3'
@@ -71,6 +79,10 @@ services:
   comment:
     image: ${USERNAME}/comment:${COMMENT_VER}
     deploy:
+      restart_policy: 
+        condition: on-failure 
+        max_attempts: 12
+        delay: 1s
       resources:
         limits:
           cpus: '0.3'
@@ -84,14 +96,6 @@ services:
       placement:
         constraints:
           - node.role == worker
-    networks:
-      - front_net
-      - back_net
-
-  node-exporter:
-    image: prom/node-exporter:v0.15.0 
-    deploy: 
-      mode: global 
     networks:
       - front_net
       - back_net
