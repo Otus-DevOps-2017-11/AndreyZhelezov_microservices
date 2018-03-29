@@ -39,7 +39,7 @@
 Были созданы файлы переменных среды **prod/.env** и **dev/.env** относительно рабочего каталога в котором располагаются файлы **docker-compose...yml**. В них определены переменные необходимые для запуска разных окружений, для продакшена и для разработки соответственно. 
 Образцы данных файлов располагаются в дистрибутиве **prod/.env.example** и **dev/.env.example**. Различия между окружениями состоят в разведении по разным портам на которые публикуются сервисы на физических нодах, а так же есть отличия в выделяемых ресурсах. Всё это отражено в файлах переменных окружения. 
 Запуск различных окружений я производил из директории проекта следующей командой:
-* _docker stack deploy --compose-file=<(cd prod; docker-compose -f ../docker-compose.monitoring.yml -f ../docker-compose.yml config 2>/dev/null; cd ..)  PROD_ - дляд продакшн окружения;
+* _docker stack deploy --compose-file=<(cd prod; docker-compose -f ../docker-compose.monitoring.yml -f ../docker-compose.yml config 2>/dev/null; cd ..)  PROD_ - для продакшн окружения;
 * _docker stack deploy --compose-file=<(cd dev; docker-compose -f ../docker-compose.monitoring.yml -f ../docker-compose.yml config 2>/dev/null; cd ..)  DEV_ - для окружения разработки.
 
 #######################################################
