@@ -24,10 +24,10 @@ services:
         delay: 3s
       resources:
         limits:
-          cpus: '0.25'
-          memory: 150M
+          cpus: ${UI_CPUS}
+          memory: ${UI_MEM}
       mode: replicated
-      replicas: 3
+      replicas: ${UI_REPLICAS}
       update_config:
         delay: 5s
         parallelism: 1
@@ -37,11 +37,11 @@ services:
           - node.role == worker
     environment:
       - POST_SERVICE_HOST=post
-      - POST_SERVICE_PORT=5000
+      - POST_SERVICE_PORT=${POST_C_PORT}
       - COMMENT_SERVICE_HOST=comment
-      - COMMENT_SERVICE_PORT=9292
+      - COMMENT_SERVICE_PORT=${COMMENT_C_PORT}
     ports:
-      - ${H_PORT_UI}:${C_PORT_UI}/tcp
+      - ${UI_H_PORT}:${UI_C_PORT}/tcp
     networks:
       - front_net
 
@@ -54,10 +54,10 @@ services:
         delay: 1s
       resources:
         limits:
-          cpus: '0.3'
-          memory: 300M
+          cpus: ${POST_CPUS}
+          memory: ${POST_MEM}
       mode: replicated
-      replicas: 3
+      replicas: ${POST_REPLICAS}
       update_config:
         delay: 10s
         parallelism: 2
@@ -74,7 +74,7 @@ services:
     depends_on:
       - post_db
     ports:
-      - "5000:5000"
+      - ${POST_H_PORT}:${POST_C_PORT}
 
   comment:
     image: ${USERNAME}/comment:${COMMENT_VER}
@@ -85,10 +85,10 @@ services:
         delay: 1s
       resources:
         limits:
-          cpus: '0.3'
-          memory: 300M
+          cpus: ${COMMENT_CPUS}
+          memory: ${COMMENT_MEM}
       mode: replicated
-      replicas: 3
+      replicas: ${COMMENT_REPLICAS}
       update_config:
         delay: 10s
         parallelism: 2
@@ -104,5 +104,5 @@ volumes:
   post_db: {}
 
 networks:
-  back_net: {}
   front_net: {}
+  back_net: {}
