@@ -1,14 +1,12 @@
-version: '3'
+version: '3.4'
 services:
-  zipkin:
-    image: openzipkin/zipkin
-    ports:
-      - "9411:9411"
-    networks:
-      front_net:
-      back_net:
+
   post_db:
     image: mongo:3.2
+    deploy:
+      placement:
+        constraints:
+          - node.labels.reliability == high
     volumes:
       - post_db:/data/db
     networks:
@@ -16,50 +14,95 @@ services:
         aliases:
           - post_db
           - comment_db
+
   ui:
     image: ${USERNAME}/ui:${UI_VER}
+    deploy:
+      restart_policy: 
+        condition: on-failure 
+        max_attempts: 3
+        delay: 3s
+      resources:
+        limits:
+          cpus: ${UI_CPUS}
+          memory: ${UI_MEM}
+      mode: replicated
+      replicas: ${UI_REPLICAS}
+      update_config:
+        delay: 5s
+        parallelism: 1
+        failure_action: pause
+      placement:
+        constraints:
+          - node.role == worker
     environment:
       - POST_SERVICE_HOST=post
-      - POST_SERVICE_PORT=5000
+      - POST_SERVICE_PORT=${POST_C_PORT}
       - COMMENT_SERVICE_HOST=comment
-      - COMMENT_SERVICE_PORT=9292
-    depends_on:
-      - fluentd
+      - COMMENT_SERVICE_PORT=${COMMENT_C_PORT}
     ports:
-      - ${H_PORT_UI}:${C_PORT_UI}/tcp
+      - ${UI_H_PORT}:${UI_C_PORT}/tcp
     networks:
-      front_net:
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: service.ui
+      - front_net
+
   post:
     image: ${USERNAME}/post:${POST_VER}
+    deploy:
+      restart_policy: 
+        condition: on-failure 
+        max_attempts: 12
+        delay: 1s
+      resources:
+        limits:
+          cpus: ${POST_CPUS}
+          memory: ${POST_MEM}
+      mode: replicated
+      replicas: ${POST_REPLICAS}
+      update_config:
+        delay: 10s
+        parallelism: 2
+        failure_action: rollback
+      placement:
+        constraints:
+          - node.role == worker
     networks:
-      back_net:
-      front_net:
+      - back_net
+      - front_net
     environment:
       - POST_DATABASE_HOST=post_db
       - POST_DATABASE=posts
     depends_on:
       - post_db
     ports:
-      - "5000:5000"
-    logging:
-      driver: "fluentd"
-      options:
-        fluentd-address: localhost:24224
-        tag: service.post
+      - ${POST_H_PORT}:${POST_C_PORT}
+
   comment:
     image: ${USERNAME}/comment:${COMMENT_VER}
+    deploy:
+      restart_policy: 
+        condition: on-failure 
+        max_attempts: 12
+        delay: 1s
+      resources:
+        limits:
+          cpus: ${COMMENT_CPUS}
+          memory: ${COMMENT_MEM}
+      mode: replicated
+      replicas: ${COMMENT_REPLICAS}
+      update_config:
+        delay: 10s
+        parallelism: 2
+        failure_action: rollback
+      placement:
+        constraints:
+          - node.role == worker
     networks:
-      back_net:
-      front_net:
+      - front_net
+      - back_net
 
 volumes:
-  post_db:
+  post_db: {}
 
 networks:
-  back_net:
-  front_net:
+  front_net: {}
+  back_net: {}

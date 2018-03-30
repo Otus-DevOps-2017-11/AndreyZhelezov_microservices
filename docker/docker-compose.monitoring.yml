@@ -1,0 +1,90 @@
+version: '3.4'
+services:
+
+  prometheus:
+    image: ${USERNAME}/prometheus_swarm:latest
+    deploy:
+      placement:
+        constraints:
+          - node.labels.reliability == high
+    ports:
+      - '${PROMETHEUS_H_PORT}:9090'
+    volumes:
+      - prometheus_data:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention=1d'
+    networks:
+      - back_net
+      - front_net
+
+  node-exporter:
+    image: prom/node-exporter:v0.15.2
+    deploy:
+      mode: global
+    user: root
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command:
+      - '--path.procfs=/host/proc'
+      - '--path.sysfs=/host/sys'
+      - '--collector.filesystem.ignored-mount-points="^/(sys|proc|dev|host|etc)($$|/)"'
+    networks:
+      - back_net
+      - front_net
+
+  cadvisor:
+    image: google/cadvisor:v0.29.0
+    deploy:
+      mode: global
+    volumes:
+      - '/:/rootfs:ro'
+      - '/var/run:/var/run:rw'
+      - '/sys:/sys:ro'
+      - '/var/lib/docker/:/var/lib/docker:ro'
+    networks:
+      - back_net
+      - front_net
+    ports:
+      - '${CADVISOR_H_PORT}:8080'
+
+  grafana:
+    image: grafana/grafana:5.0.0-beta4
+    deploy:
+      placement:
+        constraints:
+          - node.labels.reliability == high
+    volumes:
+      - grafana_data:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=secret
+    depends_on:
+      - prometheus
+    networks:
+      - back_net
+      - front_net
+    ports:
+      - ${GRAFANA_H_PORT}:3000
+
+  alertmanager:
+    image: ${USERNAME}/alertmanager 
+    deploy:
+      placement:
+        constraints:
+          - node.labels.reliability == high
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+    networks:
+      - back_net
+      - front_net
+    ports:
+      - ${ALERTMANAGER_H_PORT}:9093 
+
+volumes:
+  prometheus_data:
+  grafana_data:
+
