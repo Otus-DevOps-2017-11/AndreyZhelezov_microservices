@@ -10,7 +10,8 @@
 В репозитории ДЗ был создан каталог **kubernetes/kubernetes_the_hard_way** в который были помещены все файлы созданные в процессе прохождения туториала.
 Так же на созданном кластере были запущены поды deployment-ов для приложений ui, post, comment и mongo, созданные в первом шаге ДЗ. Они успешно запустились в созданном кластере:
 
-```$ kubectl get pod -a
+```
+$ kubectl get pod -a
 NAME                                  READY     STATUS    RESTARTS   AGE
 busybox-855686df5d-rll4w              1/1       Running   1          1h
 comment-deployment-85f97f7c69-mpd27   1/1       Running   0          22m
