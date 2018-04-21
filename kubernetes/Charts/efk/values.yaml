@@ -1,0 +1,4 @@
+kibana:
+  ingress.enabled: true
+  ingress.hosts: reddit-kibana
+  env.ELASTICSEARCH_URL: http://elasticsearch-logging:9200
